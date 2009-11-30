@@ -61,6 +61,7 @@ def query_mollie(url):
     return response_dict
 
 def get_mollie_fee(btw=MOLLIE_BTW, fee=MOLLIE_TRANSACTION_FEE):
+    btw = decimal.Decimal(btw)
     fee = decimal.Decimal(fee)
-    fee += ((decimal.Decimal(btw) / 100) * decimal.Decimal(fee))
+    fee += ((btw / 100) * fee)
     return fee.quantize(decimal.Decimal(10) ** -2)
