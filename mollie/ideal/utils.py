@@ -30,10 +30,11 @@ def get_mollie_banklist(file=MOLLIE_BANKS_FILE):
 
 def query_mollie(request_dict,
                  base_url=MOLLIE_API_URL,
+                 testmode=MOLLIE_TEST,
                  mode=None, valid_modes=('check', 'fetch')):
     response_dict = {}
     scheme, netloc, path, query, fragment = urlparse.urlsplit(base_url)
-    if MOLLIE_TEST:
+    if testmode:
         request_dict['testmode'] = 'true'
     if mode in valid_modes:
         request_dict['a'] = mode
