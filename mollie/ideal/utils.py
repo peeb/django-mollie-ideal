@@ -61,6 +61,12 @@ def query_mollie(url):
     return response_dict
 
 def get_mollie_fee(btw=MOLLIE_BTW, fee=MOLLIE_TRANSACTION_FEE):
+    if not isinstance(btw, int):
+        err = 'MOLLIE_BTW must be an integer value.'
+        raise TypeError(err)
+    if not isinstance(fee, str):
+        err = 'MOLLIE_TRANSACTION_FEE must be a string value.'
+        raise TypeError(err)
     btw = decimal.Decimal(btw)
     fee = decimal.Decimal(fee)
     fee += ((btw / 100) * fee)
