@@ -8,7 +8,7 @@ Nederlandse versie vindt u [hier](http://www.mollie.nl/support/documentatie/beta
 
 ### Installation
 
-Since django-mollie-ideal currently doesn't contain any Django models it does not need to be added to your INSTALLED_APPS in settings.py. You simply need to install it or download it and link it into your PYTHONPATH.
+Since django-mollie-ideal currently doesn't contain any Django models it does not need to be added to your `INSTALLED_APPS` in `settings.py`. You simply need to install it or download it and link it into your `PYTHONPATH`.
 
 ### Overview
 
@@ -18,13 +18,13 @@ To be filled in.
 
 Before you can start using django-mollie-ideal you must [register with Mollie.nl](http://www.mollie.nl/aanmelden/).
 
-Once you have registered you will receive a so-called "Partner ID" which you should set as the value of MOLLIE_PARTNER_ID in your Django project's settings.py file. See below for more information about the available settings.
+Once you have registered you will receive a so-called "Partner ID" which you should set as the value of `MOLLIE_PARTNER_ID` in your Django project's `settings.py` file. See below for more information about the available settings.
 
 ### Settings
 
-    MOLLIE_TEST = True # set 'iDEAL testmode aan' here: http://www.mollie.nl/beheer/betaaldiensten/instellingen/
-    #MOLLIE_TEST = False # set 'iDEAL testmode uit' here: http://www.mollie.nl/beheer/betaaldiensten/instellingen/
-
+    # set 'iDEAL testmode aan' or 'iDEAL testmode uit' here: http://www.mollie.nl/beheer/betaaldiensten/instellingen/
+    MOLLIE_TEST = True
+    
     MOLLIE_PARTNER_ID = 123456
 
     MOLLIE_REPORT_URL = 'http://yoursite.yourdomain.com/mollie/report/'
@@ -55,19 +55,19 @@ To be filled in.
 
 django-mollie-ideal makes no assumptions about your site installation. Therefore it is up to you to decide how to capture payment information and what information you wish to store in your own database.
 
-Interaction with Mollie.nl happens via a few utility functions in mollie.ideal.utils. The following gives a broad overview of the required steps:
+Interaction with Mollie.nl happens via a few utility functions in `mollie.ideal.utils`. The following gives a broad overview of the required steps:
 
 Step 1. Build a dictionary to describe your payment
 
-Step 2. Pass this dictionary as an argument to build_mollie_url() in 'fetch' mode
+Step 2. Pass this dictionary as an argument to `build_mollie_url()` in 'fetch' mode
 
-Step 3. Pass the URL returned by Step 2 as an argument to query_mollie(). The response contains a transaction_id and an order_url. Save the transaction_id in your model and pass the order_url to your template context to proceed with the payment.
+Step 3. Pass the URL returned by Step 2 as an argument to `query_mollie()`. The response contains a `transaction_id` and an `order_url`. Save the `transaction_id` in your model and pass the `order_url` to your template context to proceed with the payment.
 
 Step 4. Setup a "return" URL which acts as a Thank You page for users of your site
 
-Step 5. Setup a "report" URL which uses build_mollie_url() in 'check' mode and query_mollie() to confirm with Mollie.nl that the transaction was successful and perform any site-specific tasks based on this response (for example you might want to mark an invoice 'status' field as 'paid' or 'complete').
+Step 5. Setup a "report" URL which uses `build_mollie_url()` in 'check' mode and `query_mollie()` to confirm with Mollie.nl that the transaction was successful and perform any site-specific tasks based on this response (for example you might want to mark an invoice 'status' field as 'paid' or 'complete').
 
-The views.py code below is a reasonably complete example of the above steps:
+The `views.py` code below is a reasonably complete example of the above steps:
 
     from django.conf import settings
     from django.http import HttpResponseServerError
