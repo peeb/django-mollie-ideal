@@ -19,20 +19,6 @@ from conf import (MOLLIE_TEST, MOLLIE_API_URL, MOLLIE_BANKS_FILE, MOLLIE_TIMEOUT
 
 socket.setdefaulttimeout(MOLLIE_TIMEOUT)
 
-def build_mollie_url(request_dict,
-                     base_url=MOLLIE_API_URL,
-                     mode=None, valid_modes=('check', 'fetch')):
-    scheme, netloc, path, query, fragment = urlparse.urlsplit(base_url)
-    if MOLLIE_TEST:
-        request_dict['testmode'] = 'true'
-    if mode in valid_modes:
-        request_dict['a'] = mode
-    else:
-        err = "Invalid mode '%s'. Valid modes are '%s' and '%s'." % (mode, valid_modes)
-        raise ValueError(err)
-    query = urllib.urlencode(request_dict)
-    return urlparse.urlunsplit((scheme, netloc, path, query, fragment))
-
 def get_mollie_banklist(file=MOLLIE_BANKS_FILE):
     choices = []
     with open(file, 'r') as f:
@@ -42,16 +28,28 @@ def get_mollie_banklist(file=MOLLIE_BANKS_FILE):
             choices.append((bank.findtext('bank_id'), bank.findtext('bank_name')))
     return tuple(choices)
 
-def query_mollie(url):
+def query_mollie(request_dict,
+                 base_url=MOLLIE_API_URL,
+                 mode=None, valid_modes=('check', 'fetch')):
     response_dict = {}
+    scheme, netloc, path, query, fragment = urlparse.urlsplit(base_url)
+    if MOLLIE_TEST:
+        request_dict['testmode'] = 'true'
+    if mode in valid_modes:
+        request_dict['a'] = mode
+    else:
+        err = "Invalid mode '%s'. Valid modes are '%s' and '%s'." % (mode, valid_modes)
+        raise ValueError(err)
+    query = urllib.urlencode(request_dict)
+    url = urlparse.urlunsplit((scheme, netloc, path, query, fragment))
     data = urllib2.urlopen(url)
     tree = etree.parse(data)
     order = tree.find('order')
     response_dict['amount'] = decimal.Decimal(order.findtext('amount')) / 100
     response_dict['transaction_id'] = order.findtext('transaction_id')
-    if 'a=fetch' in url:
+    if mode == 'fetch':
         response_dict['order_url'] = order.findtext('URL')
-    elif 'a=check' in url:
+    elif mode == 'check':
         response_dict['paid'] = order.findtext('payed') # sic!
         if response_dict['paid'] == 'true':
             consumer = order.find('consumer')
