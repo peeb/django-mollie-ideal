@@ -22,8 +22,10 @@ Once you have registered you will receive a so-called "Partner ID" which you sho
 
 ### Settings
 
-    # set 'iDEAL testmode aan' or 'iDEAL testmode uit' here: http://www.mollie.nl/beheer/betaaldiensten/instellingen/
-    MOLLIE_TEST = True
+    # you must also set 'iDEAL testmode aan' or 'iDEAL testmode uit'
+    # at the following URL: http://www.mollie.nl/beheer/betaaldiensten/instellingen/
+    MOLLIE_TEST = True # aan/on
+    #MOLLIE_TEST = False # uit/off
     
     MOLLIE_PARTNER_ID = 123456
 
@@ -78,11 +80,13 @@ The `views.py` code below is a reasonably complete example of the above steps:
 
     from my_project.forms import MyProductForm
 
-    def give(request, form_class=MyProductForm):
+    def give(request, form_class=MyProductForm, testmode=settings.MOLLIE_TEST):
         if request.method == 'POST':
             form = form_class(data=request.POST) 
             cd = form.cleaned_data
             invoice = form.save(commit=False)
+            if testmode:
+                invoice.test = True
             # Step 1
             payment_dict = {
                 'amount': invoice.amount,
