@@ -69,7 +69,7 @@ Step 2. Pass this dictionary as an argument to `query_mollie()` in 'fetch' mode.
 
 Step 3. Setup a "return" URL which acts as a Thank You page for users of your site.
 
-Step 4. Setup a "report" URL which uses `build_mollie_url()` in 'check' mode and `query_mollie()` to confirm with Mollie.nl that the transaction was successful and perform any site-specific tasks based on this response (for example you might want to mark an invoice 'status' field as 'paid' or 'complete').
+Step 4. Setup a "report" URL which uses `query_mollie()` in 'check' mode to confirm with Mollie.nl that the transaction was successful and perform any site-specific tasks based on this response (for example you might want to mark an invoice 'status' field as 'paid' or 'complete').
 
 The `views.py` code below is a reasonably complete example of the above steps:
 
