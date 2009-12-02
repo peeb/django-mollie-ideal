@@ -54,7 +54,7 @@ def query_mollie(request_dict, mode=None, valid_modes=('check', 'fetch')):
         err = "Invalid mode '%s'. Valid modes are '%s' and '%s'." % (mode, valid_modes)
         raise ValueError(err)
     url = build_mollie_url(request_dict)
-    mollie_response = parse_mollie_response(url)
+    mollie_response = parse_mollie_response(url=url)
     order = mollie_response.find('order')
     response_dict['amount'] = decimal.Decimal(order.findtext('amount')) / 100
     response_dict['transaction_id'] = order.findtext('transaction_id')
