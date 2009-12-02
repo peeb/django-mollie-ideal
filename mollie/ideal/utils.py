@@ -1,5 +1,3 @@
-from __future__ import with_statement
-
 import decimal
 import socket
 import urllib
@@ -19,31 +17,45 @@ from conf import (MOLLIE_TEST, MOLLIE_API_URL, MOLLIE_BANKS_FILE, MOLLIE_TIMEOUT
 
 socket.setdefaulttimeout(MOLLIE_TIMEOUT)
 
-def get_mollie_banklist(file=MOLLIE_BANKS_FILE):
-    with open(file, 'r') as f:
-        tree = etree.parse(f)
-        banks = tree.getiterator('bank')
-        choices = ((bank.findtext('bank_id'), bank.findtext('bank_name')) for bank in banks)
-    return tuple(choices)
-
-def query_mollie(request_dict,
-                 base_url=MOLLIE_API_URL,
-                 testmode=MOLLIE_TEST,
-                 mode=None, valid_modes=('check', 'fetch')):
-    response_dict = {}
+def build_mollie_url(input_dict, base_url=MOLLIE_API_URL, testmode=MOLLIE_TEST):
     scheme, netloc, path, query, fragment = urlparse.urlsplit(base_url)
     if testmode:
-        request_dict['testmode'] = 'true'
+        input_dict['testmode'] = 'true'
+    query = urllib.urlencode(input_dict)
+    url = urlparse.urlunsplit((scheme, netloc, path, query, fragment))
+    return url
+
+def parse_mollie_response(file=None, url=None):
+    if file:
+        data = open(file, 'r')
+    elif url:
+        data = urllib2.urlopen(url)
+    mollie_response = etree.parse(data)
+    if file:
+        file.close()
+    return mollie_response
+
+def get_mollie_banklist(file=MOLLIE_BANKS_FILE):
+    banklist_dict = {'a': 'banklist'}
+    url = build_mollie_url(banklist_dict)
+    try:
+        mollie_response = parse_mollie_response(url=url)
+    except:
+        mollie_response = parse_mollie_response(file=file)
+    banks = mollie_response.getiterator('bank')
+    choices = ((bank.findtext('bank_id'), bank.findtext('bank_name')) for bank in banks)
+    return tuple(choices)
+
+def query_mollie(request_dict, mode=None, valid_modes=('check', 'fetch')):
+    response_dict = {}
     if mode in valid_modes:
         request_dict['a'] = mode
     else:
         err = "Invalid mode '%s'. Valid modes are '%s' and '%s'." % (mode, valid_modes)
         raise ValueError(err)
-    query = urllib.urlencode(request_dict)
-    url = urlparse.urlunsplit((scheme, netloc, path, query, fragment))
-    data = urllib2.urlopen(url)
-    tree = etree.parse(data)
-    order = tree.find('order')
+    url = build_mollie_url(request_dict)
+    mollie_response = parse_mollie_response(url)
+    order = mollie_response.find('order')
     response_dict['amount'] = decimal.Decimal(order.findtext('amount')) / 100
     response_dict['transaction_id'] = order.findtext('transaction_id')
     if mode == 'fetch':
