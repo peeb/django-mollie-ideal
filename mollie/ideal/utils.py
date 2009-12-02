@@ -20,12 +20,10 @@ from conf import (MOLLIE_TEST, MOLLIE_API_URL, MOLLIE_BANKS_FILE, MOLLIE_TIMEOUT
 socket.setdefaulttimeout(MOLLIE_TIMEOUT)
 
 def get_mollie_banklist(file=MOLLIE_BANKS_FILE):
-    choices = []
     with open(file, 'r') as f:
         tree = etree.parse(f)
         banks = tree.getiterator('bank')
-        for bank in banks:
-            choices.append((bank.findtext('bank_id'), bank.findtext('bank_name')))
+        choices = ((bank.findtext('bank_id'), bank.findtext('bank_name')) for bank in banks)
     return tuple(choices)
 
 def query_mollie(request_dict,
