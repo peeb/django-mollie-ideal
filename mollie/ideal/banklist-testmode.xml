@@ -1,8 +1,0 @@
-<?xml version="1.0"?>
-<response>
-	<bank>
-		<bank_id>9999</bank_id>
-		<bank_name>TBM Bank</bank_name>
-	</bank>
-	<message>This is the current list of banks and their ID's that currently support iDEAL-payments</message>
-</response>

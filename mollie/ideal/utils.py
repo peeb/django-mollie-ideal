@@ -39,8 +39,7 @@ def get_mollie_banklist():
     choices = ((bank.findtext('bank_id'), bank.findtext('bank_name')) for bank in banks)
     return tuple(choices)
 
-def query_mollie(request_dict, mode=None, valid_modes=('check', 'fetch')):
-    assert mode in valid_modes, 'Invalid mode "%s". Valid modes are "%s" and "%s".' % (mode, valid_modes)
+def query_mollie(request_dict, mode):
     request_dict['a'] = mode
     url = build_mollie_url(request_dict)
     mollie_response = parse_mollie_response(url)
