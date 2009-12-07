@@ -40,6 +40,9 @@ def get_mollie_banklist():
     return tuple(choices)
 
 def query_mollie(request_dict, mode):
+    valid_modes = ('check', 'fetch')
+    if mode not in valid_modes:
+        raise ValueError("Invalid mode. Valid modes are '%s' and '%s'." % valid_modes)
     request_dict['a'] = mode
     url = build_mollie_url(request_dict)
     mollie_response = parse_mollie_response(url)
