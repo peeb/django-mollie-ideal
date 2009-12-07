@@ -1,28 +1,40 @@
-## Welcome
+-*- restructuredtext -*-
 
-django-mollie-ideal provides a python interface to the iDEAL API by [Mollie.nl](http://www.mollie.nl/) for use in django projects.
+Welcome
+=======
+
+django-mollie-ideal provides a python interface to the iDEAL API by Mollie.nl_ for use in django projects.
+
+.. _Mollie.nl: http://www.mollie.nl/
 
 iDEAL is an online payment system used in the Netherlands which allows Dutch consumers to make payments via the secure environment of their own bank. It is only available in the Netherlands.
 
-Mollie.nl provide a unified API which removes the complexity of interacting with the individual Dutch banks which support iDEAL payments. You can find detailed information about the Mollie.nl iDEAL API [here](http://www.mollie.nl/support/documentatie/betaaldiensten/ideal/en/).
+Mollie.nl provide a unified API which removes the complexity of interacting with the individual Dutch banks which support iDEAL payments. You can find detailed information about the Mollie.nl iDEAL API here_.
 
-Nederlandse versie vindt u [hier](http://www.mollie.nl/support/documentatie/betaaldiensten/ideal/).
+.. _here: http://www.mollie.nl/support/documentatie/betaaldiensten/ideal/en/
 
-### Installation
+Nederlandse versie vindt u hier_.
 
-Since django-mollie-ideal currently doesn't contain any Django models it does not need to be added to your `INSTALLED_APPS` in `settings.py`. You simply need to install it or download it and link it into your `PYTHONPATH`.
+.. _hier: http://www.mollie.nl/support/documentatie/betaaldiensten/ideal/
 
-### Overview
+Installation
+============
 
-To be filled in.
+Since django-mollie-ideal currently doesn't contain any Django models it does not need to be added to your ``INSTALLED_APPS`` in ``settings.py``. You simply need to install it or download it and link it into your ``PYTHONPATH``.
 
-### Registering with Mollie.nl
+Registering with Mollie.nl
+==========================
 
-Before you can start using django-mollie-ideal you must [register with Mollie.nl](http://www.mollie.nl/aanmelden/).
+Before you can start using django-mollie-ideal you must `register with Mollie.nl`_.
 
-Once you have registered you will receive a so-called "Partner ID" which you should set as the value of `MOLLIE_PARTNER_ID` in your Django project's `settings.py` file. See below for more information about the available settings.
+.. _`register with Mollie.nl`: http://www.mollie.nl/aanmelden/
 
-### Settings
+Once you have registered you will receive a so-called "Partner ID" which you should set as the value of ``MOLLIE_PARTNER_ID`` in your Django project's ``settings.py`` file. See below for more information about the available settings.
+
+Settings
+========
+
+::
 
     # you must also set 'iDEAL testmode aan' or 'iDEAL testmode uit'
     # at the following URL: http://www.mollie.nl/beheer/betaaldiensten/instellingen/
@@ -36,7 +48,10 @@ Once you have registered you will receive a so-called "Partner ID" which you sho
 
     MOLLIE_TIMEOUT = 20 # seconds
 
-### Setup your URLs
+Setup your URLs
+===============
+
+::
 
     urlpatterns = patterns('your_project.views',
         ...
@@ -49,36 +64,34 @@ Once you have registered you will receive a so-called "Partner ID" which you sho
         ...
     )
 
-### Grabbing the latest Mollie.nl list of supported banks
+Using the banklist in your models and/or forms
+==============================================
 
 To be filled in.
 
-### Using the banklist in your models and/or forms
-
-To be filled in.
-
-### Interacting with Mollie.nl
+Interacting with Mollie.nl
+==========================
 
 django-mollie-ideal makes no assumptions about your site installation. It is entirely up to you to decide what information to capture from users and what information you wish to store in your own database.
 
-Interaction with Mollie.nl happens via a few utility functions in `mollie.ideal.utils`. The following gives a broad overview of the required steps:
+Interaction with Mollie.nl happens via a few utility functions in ``mollie.ideal.utils``. The following gives a broad overview of the required steps:
 
 Step 1. Build a dictionary to describe your payment.
 
-Step 2. Pass this dictionary as an argument to `query_mollie()` in 'fetch' mode. The response contains a `transaction_id` and an `order_url`. Save the `transaction_id` in your model and pass the `order_url` to your template context to proceed with the payment.
+Step 2. Pass this dictionary as an argument to ``fetch_mollie_payment()``. The response contains a transaction_id and an order_url. Save the transaction_id in your model and pass the order_url to your template context to proceed with the payment.
 
 Step 3. Setup a "return" URL which acts as a Thank You page for users of your site.
 
-Step 4. Setup a "report" URL which uses `query_mollie()` in 'check' mode to confirm with Mollie.nl that the transaction was successful and perform any site-specific tasks based on this response (for example you might want to mark an invoice 'status' field as 'paid' or 'complete').
+Step 4. Setup a "report" URL which uses ``check_mollie_payment()`` to confirm with Mollie.nl that the transaction was successful and perform any site-specific tasks based on this response (for example you might want to mark an invoice 'status' field as 'paid' or 'complete').
 
-The `views.py` code below is a reasonably complete example of the above steps:
+The ``views.py`` code below is a reasonably complete example of the above steps::
 
     from django.conf import settings
     from django.http import HttpResponseServerError
     from django.shortcuts import render_to_response
     from django.template import RequestContext
 
-    from mollie.ideal.utils import build_mollie_url, query_mollie
+    from mollie.ideal.utils import build_mollie_url, check_mollie_payment, fetch_mollie_payment
 
     from my_project.forms import MyProductForm
 
@@ -99,7 +112,7 @@ The `views.py` code below is a reasonably complete example of the above steps:
                 'returnurl': settings.MOLLIE_RETURN_URL,
             }
             # Step 2
-            mollie_response = query_mollie(payment_dict, mode='fetch')
+            mollie_response = fetch_mollie_payment(payment_dict)
             order_url = mollie_response['order_url']
             invoice.transaction_id = mollie_response['transaction_id']
             invoice.save()
@@ -115,7 +128,8 @@ The `views.py` code below is a reasonably complete example of the above steps:
 
     def mollie_report(request):
 
-### Templates
+Templates
+=========
 
 To be filled in.
 
