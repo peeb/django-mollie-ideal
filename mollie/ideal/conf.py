@@ -1,20 +1,8 @@
-import os
-
 from django.conf import settings
-
-here = os.path.dirname(__file__)
 
 MOLLIE_API_URL = 'http://www.mollie.nl/xml/ideal'
 
 MOLLIE_TEST = getattr(settings, 'MOLLIE_TEST', False)
-
-MOLLIE_BANKS_FILE = getattr(settings, 'MOLLIE_BANKS_FILE', None)
-
-if not MOLLIE_BANKS_FILE:
-    if MOLLIE_TEST:
-        MOLLIE_BANKS_FILE = os.path.join(here, 'banklist-testmode.xml')
-    else:
-        MOLLIE_BANKS_FILE = os.path.join(here, 'banklist.xml')
 
 MOLLIE_MIN_AMOUNT = getattr(settings, 'MOLLIE_MIN_AMOUNT', 118)
 
