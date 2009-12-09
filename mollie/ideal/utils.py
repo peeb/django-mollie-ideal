@@ -1,9 +1,6 @@
 import decimal
 import socket
-import urllib
-import urllib2
-import urlparse
-
+import urllib, urllib2, urlparse
 try:
     from lxml import etree
 except ImportError:
@@ -25,18 +22,20 @@ def build_mollie_url(input_dict, base_url=MOLLIE_API_URL, testmode=MOLLIE_TEST):
     return url
 
 def parse_mollie_response(url):
-    data = urllib2.urlopen(url)
-    mollie_response = etree.parse(data)
-    return mollie_response
-
-def get_mollie_banklist():
-    url = build_mollie_url(dict(a='banklist'))
     try:
-        mollie_response = parse_mollie_response(url)
+        data = urllib2.urlopen(url)
     except:
         raise
+    response_dict = etree.parse(data)
+    return response_dict
+
+def get_mollie_banklist(empty_label=None):
+    url = build_mollie_url(dict(a='banklist'))
+    mollie_response = parse_mollie_response(url)
     banks = mollie_response.getiterator('bank')
-    choices = ((bank.findtext('bank_id'), bank.findtext('bank_name')) for bank in banks)
+    choices = [(bank.findtext('bank_id'), bank.findtext('bank_name')) for bank in banks]
+    if empty_label is not None:
+        choices.insert(0, ('', empty_label))
     return tuple(choices)
 
 def query_mollie(request_dict, mode):
