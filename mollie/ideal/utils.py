@@ -35,7 +35,6 @@ def get_mollie_banklist(empty_label=None):
     banks = mollie_response.getiterator('bank')
     choices = [(bank.findtext('bank_id'), bank.findtext('bank_name')) for bank in banks]
     if empty_label is not None:
-        assert isinstance(empty_label, (str, unicode))
         choices.insert(0, ('', empty_label))
     return tuple(choices)
 
