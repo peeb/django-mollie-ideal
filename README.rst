@@ -65,7 +65,11 @@ Setup your URLs
 Using the banklist in your models and/or forms
 ==============================================
 
-To be filled in.
+::
+
+    from django.utils.translation import ugettext_lazy as _
+
+    get_mollie_banklist(empty_string=_('Please select your bank'))
 
 Interacting with Mollie.nl
 ==========================
@@ -76,11 +80,11 @@ Interaction with Mollie.nl happens via a few utility functions in ``mollie.ideal
 
 Step 1. Build a dictionary to describe your payment.
 
-Step 2. Pass this dictionary as an argument to ``fetch_mollie_payment()``. The response contains a transaction_id and an order_url. Save the transaction_id in your model and pass the order_url to your template context to proceed with the payment.
+Step 2. Pass this dictionary as an argument to ``query_mollie()`` in "fetch" mode. The response contains a transaction_id and an order_url. Save the transaction_id in your model and pass the order_url to your template context to proceed with the payment.
 
 Step 3. Setup a "return" URL which acts as a Thank You page for users of your site.
 
-Step 4. Setup a "report" URL which uses ``check_mollie_payment()`` to confirm with Mollie.nl that the transaction was successful and perform any site-specific tasks based on this response (for example you might want to mark an invoice 'status' field as 'paid' or 'complete').
+Step 4. Setup a "report" URL which uses ``query_mollie()`` in "check" mode to confirm with Mollie.nl that the transaction was successful and perform any site-specific tasks based on this response (for example you might want to mark an invoice 'status' field as 'paid' or 'complete').
 
 The ``views.py`` code below is a reasonably complete example of the above steps::
 
@@ -110,7 +114,7 @@ The ``views.py`` code below is a reasonably complete example of the above steps:
                 'returnurl': settings.MOLLIE_RETURN_URL,
             }
             # Step 2
-            mollie_response = fetch_mollie_payment(payment_dict)
+            mollie_response = query_mollie(payment_dict, 'fetch')
             order_url = mollie_response['order_url']
             invoice.transaction_id = mollie_response['transaction_id']
             invoice.save()

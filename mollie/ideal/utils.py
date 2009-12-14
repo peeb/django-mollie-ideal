@@ -22,8 +22,10 @@ def build_mollie_url(input_dict, base_url=MOLLIE_API_URL, testmode=MOLLIE_TEST):
     return url
 
 def parse_mollie_response(url):
+    from datetime import datetime
     try:
         data = urllib2.urlopen(url)
+        urllib.urlretrieve(url, '/var/tmp/mollie-response-%s.xml' % datetime.now().isoformat())
     except:
         raise
     response_dict = etree.parse(data)
