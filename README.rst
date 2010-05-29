@@ -38,7 +38,7 @@ If you do not have ``lxml`` installed, the built-in ``xml.etree.cElementTree`` w
 Registering with Mollie.nl
 ==========================
 
-Before you can start using django-mollie-ideal you must `register with Mollie.nl`_.
+Before you can start using ``django-mollie-ideal`` you must `register with Mollie.nl`_.
 
 .. _`register with Mollie.nl`: http://www.mollie.nl/aanmelden/
 
@@ -73,10 +73,6 @@ Set up your URLs
         url(r'^payment/thankyou/$', 'payment_return', name='payment_return'),
         ...
     )
-
-Supported Banks
-===============
-
 
 Models
 ======
