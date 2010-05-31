@@ -37,7 +37,7 @@ class MollieIdealPayment(models.Model):
         order = parsed_xml.find('order')
         order_url = order.findtext('URL')
         self.transaction_id = order.findtext('transaction_id')
-        #self.bank_name = self.get_bank_id_display()
+        self.bank_name = self.get_bank_id_display()
         self.save()
         return order_url
         

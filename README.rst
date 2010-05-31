@@ -61,14 +61,12 @@ Settings
     
     MOLLIE_MIN_AMOUNT = '1.18' # Defaults value
 
-    MOLLIE_BANKLIST_DIR = '/var/tmp' # Default value
-
 Grabbing the latest list of supported banks
 ===========================================
 
 Before you start to use ``django-mollie-ideal`` in your Django project, you should first grab the latest list of supported banks from Mollie.nl.
 
-Once ``django-mollie-ideal`` is installed in your project a new Django management command ``get_mollie_banklists`` will become available. This command requests and saves the latest list of supported banks and saves two files - ``mollie_banklist.xml`` and ``mollie_banklist_testmode.xml`` - to the directory ``MOLLIE_BANKLIST_DIR`` which should be defined in your project's ``settings.py`` file. If this setting is missing, the files will be saved to ``/var/tmp`` by default. You will probably want to set this to another directory, especially on Windows systems.
+Once ``django-mollie-ideal`` is installed in your project a new Django management command ``get_mollie_banklists`` will become available. This command requests latest list of supported banks and saves two files - ``mollie_banklist.xml`` and ``mollie_banklist_testmode.xml`` - to the current directory.
 
 You should run this command periodically to refresh the list of banks available to users of your web application. Here's how::
 
