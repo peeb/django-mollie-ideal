@@ -66,7 +66,7 @@ Grabbing the latest list of supported banks
 
 Before you start to use ``django-mollie-ideal`` in your Django project, you should first grab the latest list of supported banks from Mollie.nl.
 
-Once ``django-mollie-ideal`` is installed in your project a new Django management command ``get_mollie_banklists`` will become available. This command requests latest list of supported banks and saves two files - ``mollie_banklist.xml`` and ``mollie_banklist_testmode.xml`` - to the current directory.
+Once ``django-mollie-ideal`` is installed in your project a new Django management command ``get_mollie_banklists`` will become available. This command requests the latest list of supported banks and saves two files - ``mollie_banklist.xml`` and ``mollie_banklist_testmode.xml`` - to the current directory.
 
 You should run this command periodically to refresh the list of banks available to users of your web application. Here's how::
 
