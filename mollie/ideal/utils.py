@@ -10,8 +10,7 @@ def query_mollie(request_dict, mode):
     if mode not in valid_modes:
         raise ValueError("Invalid mode. Valid modes are '%s' and '%s'." % valid_modes)
     request_dict['a'] = mode
-    url = build_mollie_url(request_dict)
-    parsed_xml = get_mollie_xml(url)
+    parsed_xml = get_mollie_xml(request_dict)
     order = parsed_xml.find('order')
     response_dict = dict()
     response_dict['transaction_id'] = order.findtext('transaction_id')

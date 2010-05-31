@@ -3,7 +3,6 @@
 from decimal import Decimal
 
 from django import forms
-from django.conf import settings
 
 from mollie.ideal.models import MollieIdealPayment
 from mollie.ideal.settings import MOLLIE_MIN_AMOUNT

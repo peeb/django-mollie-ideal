@@ -10,9 +10,9 @@ class MollieIdealPayment(models.Model):
 
     transaction_id = models.CharField(_('transaction ID'), max_length=255)
     amount = models.DecimalField(_('amount'), max_digits=64, decimal_places=2)
-    bank = models.CharField(_('bank'), max_length=4,
-                            choices=get_mollie_bank_choices(),
-                            default='')
+    bank_id = models.CharField(_('bank ID'), max_length=4,
+                               choices=get_mollie_bank_choices(), default = '')
+    bank_name = models.CharField(_('bank name'), max_length=100)
     description = models.CharField(_('description'), max_length=29)
     timestamp = models.DateTimeField(_('date'), auto_now_add=True)
     consumer_account = models.CharField(_('consumer account'), max_length=255, blank=True)
@@ -23,25 +23,24 @@ class MollieIdealPayment(models.Model):
         abstract = True
         verbose_name = _('Mollie/iDEAL payment')
 
-    def get_order_url_and_save(self):
-        """Sets up a payment, saves the transaction ID and returns an order URL"""
+    def get_order_url(self):
         request_dict = dict(
             a = 'fetch',
             amount = int(self.amount * 100),
-            bank_id = self.bank,
+            bank_id = self.bank_id,
             description = self.description,
             partnerid = settings.MOLLIE_PARTNER_ID,
             reporturl = settings.MOLLIE_REPORT_URL,
             returnurl = settings.MOLLIE_RETURN_URL
         )
-        url = build_mollie_url(request_dict)
-        parsed_xml = get_mollie_xml(url)
+        parsed_xml = get_mollie_xml(request_dict)
         order = parsed_xml.find('order')
-        order_url = order.findtext('URL') 
+        order_url = order.findtext('URL')
         self.transaction_id = order.findtext('transaction_id')
+        #self.bank_name = self.get_bank_id_display()
         self.save()
         return order_url
-    
+        
     def is_paid(self):
             """Checks whether a payment has been made successfully"""
             request_dict = dict(
@@ -49,8 +48,7 @@ class MollieIdealPayment(models.Model):
                 partnerid = settings.MOLLIE_PARTNER_ID,
                 transaction_id = self.transaction_id
             )
-            url = build_mollie_url(request_dict)
-            parsed_xml = get_mollie_xml(url)
+            parsed_xml = get_mollie_xml(request_dict)
             order = parsed_xml.find('order')
             consumer = order.find('consumer')
             if consumer:
@@ -60,10 +58,6 @@ class MollieIdealPayment(models.Model):
             if order.findtext('payed') == 'true':
                 return True
             return False
-
-    @property
-    def bank_name(self):
-        return self.get_bank_display()
 
     def __unicode__(self):
         return u'Mollie/iDEAL Payment ID: %d' % self.id

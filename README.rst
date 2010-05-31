@@ -1,5 +1,5 @@
-Welcome
-=======
+Overview
+========
 
 ``django-mollie-ideal`` provides a Python interface to the iDEAL API by Mollie.nl_ for use in Django projects.
 
@@ -21,8 +21,8 @@ Installation
 Link the ``mollie`` directory into your ``PYTHONPATH`` and add ``mollie`` to your ``INSTALLED_APPS``::
 
     INSTALLED_APPS = (
-    ...
-    'mollie',
+        ...
+        'mollie',
     )
 
 ``django-mollie-ideal`` will use ``lxml`` if it is installed. You can install ``lxml`` as follows::
@@ -33,7 +33,7 @@ or::
 
     pip install lxml
 
-If you do not have ``lxml`` installed, the built-in ``xml.etree.cElementTree`` will be used instead.
+If you do not have ``lxml`` installed, the built-in ``xml.etree.[c]ElementTree`` will be used instead.
 
 Registering with Mollie.nl
 ==========================
@@ -52,17 +52,31 @@ Settings
     # You must also set 'iDEAL testmode aan' or 'iDEAL testmode uit'
     # at the following URL: http://www.mollie.nl/beheer/betaaldiensten/instellingen/
     MOLLIE_TEST = True # aan/on
-    #MOLLIE_TEST = False # uit/off
+    #MOLLIE_TEST = False # uit/off # Default value
     
-    MOLLIE_PARTNER_ID = 123456
+    MOLLIE_PARTNER_ID = 123456 # REQUIRED
 
-    MOLLIE_REPORT_URL = 'http://yoursite.yourdomain.com/payment/process/'
-    MOLLIE_RETURN_URL = 'http://yoursite.yourdomain.com/payment/thankyou/'
+    MOLLIE_REPORT_URL = 'http://yoursite.yourdomain.com/payment/process/' # REQUIRED
+    MOLLIE_RETURN_URL = 'http://yoursite.yourdomain.com/payment/thankyou/' # REQUIRED
     
-    MOLLIE_MIN_AMOUNT = '1.18'
+    MOLLIE_MIN_AMOUNT = '1.18' # Defaults value
 
-Set up your URLs
-================
+    MOLLIE_BANKLIST_DIR = '/var/tmp' # Default value
+
+Grabbing the latest list of supported banks
+===========================================
+
+Before you start to use ``django-mollie-ideal`` in your Django project, you should first grab the latest list of supported banks from Mollie.nl.
+
+Once ``django-mollie-ideal`` is installed in your project a new Django management command ``get_mollie_banklists`` will become available. This command requests and saves the latest list of supported banks and saves two files - ``mollie_banklist.xml`` and ``mollie_banklist_testmode.xml`` - to the directory ``MOLLIE_BANKLIST_DIR`` which should be defined in your project's ``settings.py`` file. If this setting is missing, the files will be saved to ``/var/tmp`` by default. You will probably want to set this to another directory, especially on Windows systems.
+
+You should run this command periodically to refresh the list of banks available to users of your web application. Here's how::
+
+    $ cd /path/to/your/django_app
+    $ python manage.py get_mollie_banklists
+
+Setup your URLs
+===============
 
 ::
 
@@ -86,7 +100,7 @@ Most of the logic in ``django-mollie-ideal`` is handled by the ``MollieIdealPaym
         email = models.EmailField()
         complete = models.BooleanField()
 
-Payment processing is handled by 2 separate instance methods on ``MollieIdealPayment`` - ``get_order_url_and_save()`` and ``is_paid()``. These are analogous to the "fetch" and "check" steps respectively, as described in the Mollie API.
+Payment processing is handled by 2 separate instance methods on ``MollieIdealPayment`` - ``get_order_url()`` and ``is_paid()``. These are analogous to the "fetch" and "check" steps respectively, as described in the Mollie API.
 
 The list of supported banks is fetched dynamically every time an instance of your payment class is created. Future release of ``django-mollie-ideal`` may handle this with locally-stored xml files.
 
@@ -104,20 +118,22 @@ You will also need to create a specialised form by subclassing ``MollieIdealPaym
             model = MyPayment
             fields = ('bank', 'amount', 'name', 'email')
 
-``MollieIdealPaymentForm`` subclasses ``django.forms.ModelForm``. This means that in your own form, you should take care to manually specify which fields from it you wish to display in addition to the custom fields from your own model. In the above example, we're displaying ``bank`` and ``amount`` from ``MollieIdealPaymentForm`` and ``name`` and ``email`` from the ``MyPaymentForm`` subclass. You must display ``bank`` as a bare minimum.
+``MollieIdealPaymentForm`` subclasses ``django.forms.ModelForm``. This means that in your own form, you should take care to manually specify which fields from it you wish to display in addition to the custom fields from your own model. In the above example we're displaying ``bank`` and ``amount`` from ``MollieIdealPaymentForm`` and ``name`` and ``email`` from the ``MyPaymentForm`` subclass. You must display ``bank`` as a bare minimum. The Django ``ModelForm`` documentation_ is worth consulting for more detailed informtation on how to create forms from models.
 
-Note that Mollie require payments to be a minimum of €1.18 (€0.99 + BTW). ``MollieIdealPaymentForm`` already handles this for you. This is worth bearing in mind when you are pricing items on your site.
+Note that Mollie require payments to be a minimum of €1.18 (€0.99 + BTW). ``MollieIdealPaymentForm`` already handles this for you. This is worth bearing in mind when you are pricing items on your site. 
+
+.. _documentation: http://docs.djangoproject.com/en/dev/topics/forms/modelforms/
 
 Views
 =====
 
 There are 3 main steps.
 
-Step 1. Define your payment and use its ``get_order_url_and_save()`` instance method to set up the transaction with Mollie.nl. ``get_order_url_and_save()`` takes care of storing the Mollie.nl ``transaction_id`` which identifies your payment and returns an ``order_url`` for use in your view function's template context. 
+Step 1. Define your payment and use its ``get_order_url()`` instance method to setup the transaction with Mollie.nl. ``get_order_url()`` takes care of storing the Mollie.nl ``transaction_id`` which identifies your payment and returns an ``order_url`` for use in your view function's template context. Note that ``get_order_url()`` also performs a ``save()`` on your payment instance so you do not need to do this in your view function.
 
-Step 2. Set up a return URL which acts as a "Thank You" landing page for users of your site. Once the user has finished the transaction with their bank, they will be redirected to this page.
+Step 2. Setup a return URL which acts as a "Thank You" landing page for users of your site. Once the user has finished the transaction with their bank, they will be redirected to this page.
 
-Step 3. Set up a report URL which uses the ``is_paid()`` instance method to check with Mollie.nl that the transaction was successful and to perform any site-specific processing tasks based on this response. For example you might want to mark the above ``MyPayment`` instance's ``complete`` field as ``True``. The function you attach to this URL should handle both successful and unsuccessful/cancelled payments. For the sake of flexibility, ``is_paid()`` does not handle saving the payment instance to the database, so you must remember to perform a ``save()`` in your view.
+Step 3. Setup a report URL which uses the ``is_paid()`` instance method to check with Mollie.nl that the transaction was successful and to perform any site-specific processing tasks based on this response. For example you might want to mark the above ``MyPayment`` instance's ``complete`` field as ``True``. The function you attach to this URL should handle both successful and unsuccessful/cancelled payments. Note that ``is_paid()`` does not handle saving the payment instance to the database because it is likely that you will need to perform various processing tasks such as setting site-specific attributes before committing to the database. Therefore you must remember to perform a ``save()`` in your view.
 
 The ``views.py`` code below is a reasonably complete example of the above steps::
 
@@ -137,7 +153,7 @@ The ``views.py`` code below is a reasonably complete example of the above steps:
                 payment.description = u'max 29 char product description'
                 payment.name = cd['name']
                 payment.email = cd['email']
-                order_url = payment.get_order_url_and_save()
+                order_url = payment.get_order_url()
                 return render_to_response('payment_step2.html',
                                           {'payment': payment, 'order_url': order_url},
                                           context_instance=RequestContext(request))
