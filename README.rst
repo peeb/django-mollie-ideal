@@ -108,6 +108,10 @@ Most of the logic in ``django-mollie-ideal`` is handled by the ``MollieIdealPaym
 
 Payment processing is handled by 2 separate instance methods on ``MollieIdealPayment`` - ``get_order_url()`` and ``is_paid()``. These are analogous to the "fetch" and "check" steps respectively, as described in the Mollie API.
 
+Note that because ``MollieIdealPayment`` is an `abstract base class`_, you will also need to setup your own ``admin.py`` file to represent your own ``MyPayment`` model in the Django admin.
+
+.. _`abstract base class`: http://docs.djangoproject.com/en/dev/topics/db/models/#id6
+
 Forms
 =====
 
