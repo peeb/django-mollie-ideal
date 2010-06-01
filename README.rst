@@ -70,7 +70,7 @@ Settings
 Grabbing the latest list of supported banks
 ===========================================
 
-Before you start to use ``django-mollie-ideal`` in your Django project, you should first grab the latest list of supported banks from Mollie.nl. ``MollieIdealPayment`` requires this file to build the list of supported banks available to your application. An ``IOError`` will be raised if ``django-mollie-ideal`` cannot locate this information and your application will fail to run.
+Before you start to use ``django-mollie-ideal`` in your Django project, you should first grab the latest list of supported banks from Mollie.nl. ``MollieIdealPayment`` requires this file to build the list of supported banks available to your application.
 
 Once ``django-mollie-ideal`` is installed in your project a new Django management command ``get_mollie_banklist`` will become available. This command requests the latest list of supported banks and saves the file ``mollie_banklist.xml`` to the current directory. You should also specify ``MOLLIE_BANKLIST_DIR`` in your ``settings.py`` file.
 
