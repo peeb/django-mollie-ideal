@@ -36,7 +36,6 @@ def get_mollie_xml(request_dict, base_url=MOLLIE_API_URL, testmode=MOLLIE_TEST):
 def get_mollie_bank_choices(testmode=MOLLIE_TEST, show_all_banks=False):
     fallback_file = os.path.join(os.path.dirname(__file__), 'mollie_banklist.xml')
     file = os.path.join(MOLLIE_BANKLIST_DIR, 'mollie_banklist.xml')
-    choices = []
     test_bank = ('9999', 'TBM Bank (Test Bank)')
     empty_choice = ('', _('Please select your bank'))
     if os.path.exists(file):
