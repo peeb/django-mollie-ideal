@@ -84,13 +84,13 @@ Note that if you do not run this command, ``django-mollie-ideal`` will default t
 Setup your URLs
 ===============
 
-::
+How you setup your ``urls.py`` is, of course, entirely up to you. The following serves as an example::
 
     urlpatterns = patterns('my_project.my_app.views',
         ...
         url(r'^payment/pay/$', 'make_payment', name='pay'),
-        url(r'^payment/process/$', 'payment_report', name='payment_report'),
-        url(r'^payment/thankyou/$', 'payment_return', name='payment_return'),
+        url(r'^payment/process/$', 'process_payment', name='process_payment'),
+        url(r'^payment/thankyou/$', 'payment_thanks', name='payment_thanks'),
         ...
     )
 
