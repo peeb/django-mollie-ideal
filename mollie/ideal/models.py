@@ -11,7 +11,8 @@ class MollieIdealPayment(models.Model):
     transaction_id = models.CharField(_('transaction ID'), max_length=255)
     amount = models.DecimalField(_('amount'), max_digits=64, decimal_places=2)
     bank_id = models.CharField(_('bank ID'), max_length=4,
-                               choices=get_mollie_bank_choices(), default = '')
+                               choices=get_mollie_bank_choices(show_all_banks=True),
+                               default = '')
     bank_name = models.CharField(_('bank name'), max_length=100)
     description = models.CharField(_('description'), max_length=29)
     timestamp = models.DateTimeField(_('date'), auto_now_add=True)

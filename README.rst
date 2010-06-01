@@ -1,7 +1,7 @@
 Overview
 ========
 
-``django-mollie-ideal`` provides a Python interface to the iDEAL API by Mollie.nl_ for use in Django projects.
+``django-mollie-ideal`` provides a Python interface to the iDEAL API by Mollie.nl_ for use in Django projects. It requires Python 2.5 or higher.
 
 .. _Mollie.nl: http://www.mollie.nl/
 
@@ -27,11 +27,11 @@ Link the ``mollie`` directory into your ``PYTHONPATH`` and add ``mollie`` to you
 
 ``django-mollie-ideal`` will use ``lxml`` if it is installed. You can install ``lxml`` as follows::
 
-    easy_install lxml
+    $ easy_install lxml
 
 or::
 
-    pip install lxml
+    $ pip install lxml
 
 If you do not have ``lxml`` installed, the built-in ``xml.etree.[c]ElementTree`` will be used instead.
 
@@ -58,20 +58,28 @@ Settings
 
     MOLLIE_REPORT_URL = 'http://yoursite.yourdomain.com/payment/process/' # REQUIRED
     MOLLIE_RETURN_URL = 'http://yoursite.yourdomain.com/payment/thankyou/' # REQUIRED
-    
-    MOLLIE_MIN_AMOUNT = '1.18' # Defaults value
+
+    MOLLIE_MIN_AMOUNT = '1.18' # Default value
+
+    import os
+
+    SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
+    MOLLIE_BANKLIST_DIR = SITE_ROOT
+
 
 Grabbing the latest list of supported banks
 ===========================================
 
-Before you start to use ``django-mollie-ideal`` in your Django project, you should first grab the latest list of supported banks from Mollie.nl.
+Before you start to use ``django-mollie-ideal`` in your Django project, you should first grab the latest list of supported banks from Mollie.nl. ``MollieIdealPayment`` requires this file to build the list of supported banks available to your application. An ``IOError`` will be raised if ``django-mollie-ideal`` cannot locate this information and your application will fail to run.
 
-Once ``django-mollie-ideal`` is installed in your project a new Django management command ``get_mollie_banklists`` will become available. This command requests the latest list of supported banks and saves two files - ``mollie_banklist.xml`` and ``mollie_banklist_testmode.xml`` - to the current directory.
+Once ``django-mollie-ideal`` is installed in your project a new Django management command ``get_mollie_banklist`` will become available. This command requests the latest list of supported banks and saves the file ``mollie_banklist.xml`` to the current directory. You should also specify ``MOLLIE_BANKLIST_DIR`` in your ``settings.py`` file.
 
 You should run this command periodically to refresh the list of banks available to users of your web application. Here's how::
 
     $ cd /path/to/your/django_app
-    $ python manage.py get_mollie_banklists
+    $ python manage.py get_mollie_banklist
+
+Note that if you do not run this command, ``django-mollie-ideal`` will default to using its own list of supported banks. However, this may well already be out-of-date by the time you start using your application.
 
 Setup your URLs
 ===============
@@ -100,8 +108,6 @@ Most of the logic in ``django-mollie-ideal`` is handled by the ``MollieIdealPaym
 
 Payment processing is handled by 2 separate instance methods on ``MollieIdealPayment`` - ``get_order_url()`` and ``is_paid()``. These are analogous to the "fetch" and "check" steps respectively, as described in the Mollie API.
 
-The list of supported banks is fetched dynamically every time an instance of your payment class is created. Future release of ``django-mollie-ideal`` may handle this with locally-stored xml files.
-
 Forms
 =====
 
@@ -114,9 +120,9 @@ You will also need to create a specialised form by subclassing ``MollieIdealPaym
 
         class Meta:
             model = MyPayment
-            fields = ('bank', 'amount', 'name', 'email')
+            fields = ('bank_id', 'amount', 'name', 'email')
 
-``MollieIdealPaymentForm`` subclasses ``django.forms.ModelForm``. This means that in your own form, you should take care to manually specify which fields from it you wish to display in addition to the custom fields from your own model. In the above example we're displaying ``bank`` and ``amount`` from ``MollieIdealPaymentForm`` and ``name`` and ``email`` from the ``MyPaymentForm`` subclass. You must display ``bank`` as a bare minimum. The Django ``ModelForm`` documentation_ is worth consulting for more detailed informtation on how to create forms from models.
+``MollieIdealPaymentForm`` subclasses ``django.forms.ModelForm``. This means that in your own form, you should take care to manually specify which fields from it you wish to display in addition to the custom fields from your own model. In the above example we're displaying ``bank_id`` and ``amount`` from ``MollieIdealPaymentForm`` and ``name`` and ``email`` from the ``MyPaymentForm`` subclass. You must display ``bank_id`` as a bare minimum. The Django ``ModelForm`` documentation_ is worth consulting for more detailed informtation on how to create forms from models.
 
 Note that Mollie require payments to be a minimum of €1.18 (€0.99 + BTW). ``MollieIdealPaymentForm`` already handles this for you. This is worth bearing in mind when you are pricing items on your site. 
 
@@ -174,3 +180,16 @@ The ``views.py`` code below is a reasonably complete example of the above steps:
             return HttpResponse('OK')
         else:
             return HttpResponseServerError
+
+Making test payments
+====================
+
+Once your project is written and configured, you can start to make some test payments. Mollie provide a test bank called "TBM Bank (The Big Mollie Bank)" which can be used as a developer sandbox to test out your code.
+
+To enable this test bank in your project you need to set ``MOLLIE_TEST`` to ``True`` in your ``settings.py`` file, then go to your `Mollie.nl account settings`_ and set "iDEAL testmode aan". Both of these steps are required.
+
+Once this is done, an additional bank "TBM Bank (Test Bank)" will appear in the list of supported banks in your application. You should use this bank (and **only** this bank) to make test transactions.
+
+When you decide to go into production, you must set ``MOLLIE_TEST`` to ``False`` in your ``settings.py`` file **and** set "iDEAL testmode uit" in your `Mollie.nl account settings`_.
+
+.. _`Mollie.nl account settings`: https://www.mollie.nl/beheer/betaaldiensten/instellingen/
