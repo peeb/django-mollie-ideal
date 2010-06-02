@@ -18,11 +18,11 @@ Nederlandse versie vindt u hier_.
 Installation
 ============
 
-Link the ``mollie`` directory into your ``PYTHONPATH`` and add ``mollie`` to your ``INSTALLED_APPS``::
+Link the ``mollie`` directory into your ``PYTHONPATH`` and add ``mollie.ideal`` to your ``INSTALLED_APPS``::
 
     INSTALLED_APPS = (
         ...
-        'mollie',
+        'mollie.ideal',
     )
 
 ``django-mollie-ideal`` will use ``lxml`` if it is installed. You can install ``lxml`` as follows::
