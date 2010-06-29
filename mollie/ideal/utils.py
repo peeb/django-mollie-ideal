@@ -2,7 +2,8 @@
 
 from decimal import Decimal
 
-from mollie.ideal.helpers import *
+from mollie.ideal.helpers import _get_mollie_xml, get_mollie_bank_choices
+
 from mollie.ideal.settings import MOLLIE_BTW, MOLLIE_TRANSACTION_FEE
 
 def query_mollie(request_dict, mode):
@@ -10,7 +11,7 @@ def query_mollie(request_dict, mode):
     if mode not in valid_modes:
         raise ValueError("Invalid mode. Valid modes are '%s' and '%s'." % valid_modes)
     request_dict['a'] = mode
-    parsed_xml = get_mollie_xml(request_dict)
+    parsed_xml = _get_mollie_xml(request_dict)
     order = parsed_xml.find('order')
     response_dict = dict()
     response_dict['transaction_id'] = order.findtext('transaction_id')

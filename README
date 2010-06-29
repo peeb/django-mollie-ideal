@@ -1,0 +1,19 @@
+================================ 
+Mollie/iDEAL Payments for Django
+================================
+
+This package provides a Python interface to the iDEAL API by Mollie.nl
+for use in Django projects. It requires Python 2.5 or higher.
+
+iDEAL is an payment system used in the Netherlands which allows Dutch
+consumers to make online payments via the secure environment of their
+own bank.
+
+Mollie.nl provide a unified API which removes the complexity of
+interacting with the individual Dutch banks which support iDEAL
+payments. You can find detailed information about the Mollie.nl iDEAL
+API at
+http://www.mollie.nl/support/documentatie/betaaldiensten/ideal/en/ 
+
+Full information and installation instructions can be found in
+README.rst

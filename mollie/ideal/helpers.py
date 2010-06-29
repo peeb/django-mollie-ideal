@@ -20,7 +20,7 @@ from mollie.ideal.settings import MOLLIE_API_URL, MOLLIE_BANKLIST_DIR, MOLLIE_TE
 
 socket.setdefaulttimeout(MOLLIE_TIMEOUT)
 
-def get_mollie_xml(request_dict, base_url=MOLLIE_API_URL, testmode=MOLLIE_TEST):
+def _get_mollie_xml(request_dict, base_url=MOLLIE_API_URL, testmode=MOLLIE_TEST):
     scheme, netloc, path, query, fragment = urlparse.urlsplit(base_url)
     if testmode:
         request_dict['testmode'] = 'true'
@@ -40,7 +40,7 @@ def get_mollie_bank_choices(testmode=MOLLIE_TEST, show_all_banks=False):
     empty_choice = ('', _('Please select your bank'))
     if not os.path.exists(file):
         file = fallback_file
-    with open(file, 'r') as xml:
+    with open(file) as xml:
         try:
             parsed_xml = etree.parse(xml)
             banks = parsed_xml.getiterator('bank')
