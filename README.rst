@@ -5,7 +5,7 @@ Overview
 
 .. _Mollie.nl: http://www.mollie.nl/
 
-iDEAL is an payment system used in the Netherlands which allows Dutch consumers to make online payments via the secure environment of their own bank.
+iDEAL is a payment system used in the Netherlands which allows Dutch consumers to make online payments via the secure environment of their own bank.
 
 Mollie.nl provide a unified API which removes the complexity of interacting with the individual Dutch banks which support iDEAL payments. You can find detailed information about the Mollie.nl iDEAL API here_.
 
