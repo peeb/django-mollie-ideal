@@ -4,7 +4,11 @@ from __future__ import with_statement
 
 import os
 import socket
-import urllib, urllib2, urlparse
+import urllib
+import urllib2
+import urlparse
+
+from django.utils.translation import ugettext_lazy as _
 
 try:
     from lxml import etree
@@ -14,13 +18,18 @@ except ImportError:
     except ImportError:
         import xml.etree.ElementTree as etree
 
-from django.utils.translation import ugettext_lazy as _
-
 from mollie.ideal.settings import MOLLIE_API_URL, MOLLIE_BANKLIST_DIR, MOLLIE_TEST, MOLLIE_TIMEOUT
+
+
+__all__ = ['get_and_parse_mollie_xml', 'get_mollie_bank_choices']
+
 
 socket.setdefaulttimeout(MOLLIE_TIMEOUT)
 
-def _get_mollie_xml(request_dict, base_url=MOLLIE_API_URL, testmode=MOLLIE_TEST):
+
+def get_and_parse_mollie_xml(request_dict,
+                             base_url=MOLLIE_API_URL,
+                             testmode=MOLLIE_TEST):
     scheme, netloc, path, query, fragment = urlparse.urlsplit(base_url)
     if testmode:
         request_dict['testmode'] = 'true'
@@ -33,7 +42,9 @@ def _get_mollie_xml(request_dict, base_url=MOLLIE_API_URL, testmode=MOLLIE_TEST)
     parsed_xml = etree.parse(xml)
     return parsed_xml
 
-def get_mollie_bank_choices(testmode=MOLLIE_TEST, show_all_banks=False):
+
+def get_mollie_bank_choices(testmode=MOLLIE_TEST,
+                            show_all_banks=False):
     fallback_file = os.path.join(os.path.dirname(__file__), 'mollie_banklist.xml')
     file = os.path.join(MOLLIE_BANKLIST_DIR, 'mollie_banklist.xml')
     test_bank = ('9999', 'TBM Bank (Test Bank)')
