@@ -34,6 +34,10 @@ class MollieIdealPayment(models.Model):
             reporturl = settings.MOLLIE_REPORT_URL,
             returnurl = settings.MOLLIE_RETURN_URL
         )
+        if settings.MOLLIE_PROFILE_KEY:
+            request_dict.update(dict(
+                profile_key=settings.MOLLIE_PROFILE_KEY
+            ))
         parsed_xml = _get_mollie_xml(request_dict)
         order = parsed_xml.find('order')
         order_url = order.findtext('URL')

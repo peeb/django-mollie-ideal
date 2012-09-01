@@ -64,6 +64,8 @@ Settings
     SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
     MOLLIE_BANKLIST_DIR = SITE_ROOT # defaults to your project's root directory
 
+    MOLLIE_PROFILE_KEY = 'Jas87821'
+
 
 Grabbing the latest list of supported banks
 ===========================================
