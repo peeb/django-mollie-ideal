@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.conf import settings
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
@@ -32,7 +33,7 @@ class MollieIdealPayment(models.Model):
             description = self.description,
             partnerid = settings.MOLLIE_PARTNER_ID,
             reporturl = settings.MOLLIE_REPORT_URL,
-            returnurl = settings.MOLLIE_RETURN_URL
+            returnurl = reverse(settings.MOLLIE_RETURN_URL)
         )
         if settings.MOLLIE_PROFILE_KEY:
             request_dict.update(dict(
