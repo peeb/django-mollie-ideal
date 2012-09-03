@@ -27,8 +27,10 @@ class MollieIdealPayment(models.Model):
     def get_order_url(self):
         'Sets up a payment with Mollie.nl and returns an order URL.'
         if settings.MOLLIE_REVERSE_URLS:
+            reporturl = settings.MOLLIE_IMPLEMENTING_SITE_URL+reverse(settings.MOLLIE_REPORT_URL)
             returnurl = settings.MOLLIE_IMPLEMENTING_SITE_URL+reverse(settings.MOLLIE_RETURN_URL)
         else:
+            reporturl = settings.MOLLIE_REPORT_URL
             returnurl = settings.MOLLIE_RETURN_URL
         request_dict = dict(
             a = 'fetch',
@@ -36,7 +38,7 @@ class MollieIdealPayment(models.Model):
             bank_id = self.bank_id,
             description = self.description,
             partnerid = settings.MOLLIE_PARTNER_ID,
-            reporturl = settings.MOLLIE_REPORT_URL,
+            reporturl = reporturl,
             returnurl = returnurl
         )
         if settings.MOLLIE_PROFILE_KEY:

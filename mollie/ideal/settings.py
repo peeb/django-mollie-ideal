@@ -13,4 +13,5 @@ MOLLIE_TRANSACTION_FEE = getattr(settings, 'MOLLIE_TRANSACTION_FEE', '.99')
 MOLLIE_TIMEOUT = getattr(settings, 'MOLLIE_TIMEOUT', 10)
 MOLLIE_PROFILE_KEY = getattr(settings, 'MOLLIE_PROFILE_KEY', None)
 MOLLIE_REVERSE_URLS = getattr(settings, 'MOLLIE_REVERSE_URLS', False)
+# todo: implement django.contrib.sites usage instead of str concatenation
 MOLLIE_IMPLEMENTING_SITE_URL = getattr(settings, 'MOLLIE_SITE_FULL_URL', 'http://www.example.com')

@@ -66,6 +66,9 @@ Settings
 
     MOLLIE_PROFILE_KEY = 'Jas87821'
 
+    MOLLIE_REVERSE_URLS = True # defaults to False, if set True, both reporting and returning url have to be reversable, e.g.:
+    MOLLIE_RETURN_URL = 'shop:thanks'
+
 
 Grabbing the latest list of supported banks
 ===========================================
