@@ -64,6 +64,11 @@ Settings
     SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
     MOLLIE_BANKLIST_DIR = SITE_ROOT # defaults to your project's root directory
 
+    MOLLIE_PROFILE_KEY = 'Jas87821'
+
+    MOLLIE_REVERSE_URLS = True # defaults to False, if set True, both reporting and returning url have to be reversable, e.g.:
+    MOLLIE_RETURN_URL = 'shop:thanks'
+
 
 Grabbing the latest list of supported banks
 ===========================================

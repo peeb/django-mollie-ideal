@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.conf import settings
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
@@ -25,15 +26,25 @@ class MollieIdealPayment(models.Model):
 
     def get_order_url(self):
         'Sets up a payment with Mollie.nl and returns an order URL.'
+        if settings.MOLLIE_REVERSE_URLS:
+            reporturl = settings.MOLLIE_IMPLEMENTING_SITE_URL+reverse(settings.MOLLIE_REPORT_URL)
+            returnurl = settings.MOLLIE_IMPLEMENTING_SITE_URL+reverse(settings.MOLLIE_RETURN_URL)
+        else:
+            reporturl = settings.MOLLIE_REPORT_URL
+            returnurl = settings.MOLLIE_RETURN_URL
         request_dict = dict(
             a = 'fetch',
             amount = int(self.amount * 100),
             bank_id = self.bank_id,
             description = self.description,
             partnerid = settings.MOLLIE_PARTNER_ID,
-            reporturl = settings.MOLLIE_REPORT_URL,
-            returnurl = settings.MOLLIE_RETURN_URL
+            reporturl = reporturl,
+            returnurl = returnurl
         )
+        if settings.MOLLIE_PROFILE_KEY:
+            request_dict.update(dict(
+                profile_key=settings.MOLLIE_PROFILE_KEY
+            ))
         parsed_xml = _get_mollie_xml(request_dict)
         order = parsed_xml.find('order')
         order_url = order.findtext('URL')
